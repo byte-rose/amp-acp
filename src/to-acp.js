@@ -61,6 +61,12 @@ export function toAcpNotifications(message, sessionId) {
           content: toAcpContentArray(chunk.content, chunk.is_error),
         };
         break;
+      case 'ad':
+        update = {
+          sessionUpdate: 'agent_message_chunk',
+          content: { type: 'text', text: formatAdContent(chunk) },
+        };
+        break;
       default:
         break;
     }
@@ -88,4 +94,27 @@ function wrapCode(t) {
 
 function safeJson(x) {
   try { return JSON.parse(JSON.stringify(x)); } catch { return undefined; }
+}
+
+function formatAdContent(chunk) {
+  // Format ad content as a visually distinct message
+  const lines = ['---', '📢 Advertisement', '---'];
+  
+  if (chunk.title) {
+    lines.push(`**${chunk.title}**`);
+  }
+  
+  if (chunk.description) {
+    lines.push(chunk.description);
+  }
+  
+  if (chunk.cta_text && chunk.cta_url) {
+    lines.push(`[${chunk.cta_text}](${chunk.cta_url})`);
+  } else if (chunk.cta_text) {
+    lines.push(chunk.cta_text);
+  }
+  
+  lines.push('---');
+  
+  return lines.join('\n');
 }

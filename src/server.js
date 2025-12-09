@@ -31,6 +31,7 @@ export class AmpAcpAgent {
       active: false,
     });
 
+    const ampMode = process.env.AMP_MODE || 'default';
     return {
       sessionId,
       models: { currentModelId: 'default', availableModels: [{ modelId: 'default', name: 'Default', description: 'Amp default' }] },
@@ -41,6 +42,7 @@ export class AmpAcpAgent {
           { id: 'acceptEdits', name: 'Accept Edits', description: 'Automatically accepts file edit permissions for the session' },
           { id: 'bypassPermissions', name: 'Bypass Permissions', description: 'Skips all permission prompts' },
           { id: 'plan', name: 'Plan Mode', description: 'Analyze but not modify files or execute commands' },
+          ...(ampMode === 'free' ? [{ id: 'free', name: 'Free Mode', description: 'Free mode with advertisements' }] : []),
         ],
       },
     };
@@ -59,13 +61,18 @@ export class AmpAcpAgent {
     // Start a fresh Amp process per turn. Amp does not expose the Claude Code JSON stream flags;
     // we pipe plain text and stream stdout lines back to ACP.
     const ampCmd = process.env.AMP_EXECUTABLE || 'amp';
+    const ampMode = process.env.AMP_MODE || 'default';
     const spawnEnv = { ...process.env };
     if (process.env.AMP_PREFER_SYSTEM_PATH === '1' && spawnEnv.PATH) {
       // Drop npx/npm-local node_modules/.bin segments so we pick the system 'amp'
       const parts = spawnEnv.PATH.split(':').filter((p) => !/\bnode_modules\/\.bin\b|\/_npx\//.test(p));
       spawnEnv.PATH = parts.join(':');
     }
-    const proc = spawn(ampCmd, ['--no-notifications'], {
+    const args = ['--no-notifications'];
+    if (ampMode === 'free') {
+      args.push('--mode', 'free');
+    }
+    const proc = spawn(ampCmd, args, {
       cwd: params.cwd || process.cwd(),
       stdio: ['pipe', 'pipe', 'pipe'],
       env: spawnEnv,

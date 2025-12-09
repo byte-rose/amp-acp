@@ -21,7 +21,8 @@ Add to your Zed `settings.json` (open with `cmd+,` or `ctrl+,`):
       "args": ["-y", "amp-acp"],
       "env": {
         "AMP_EXECUTABLE": "path of AMP bin",
-        "AMP_PREFER_SYSTEM_PATH": "1"
+        "AMP_PREFER_SYSTEM_PATH": "1",
+        "AMP_MODE": "default"
       }
     }
   }
@@ -29,6 +30,11 @@ Add to your Zed `settings.json` (open with `cmd+,` or `ctrl+,`):
 ```
 
 Replace `"path of AMP bin"` with your Amp CLI path (e.g., `/usr/local/bin/amp`).
+
+### Modes
+
+- **`default`** (default): Standard Amp behavior (requires subscription/license)
+- **`free`**: Free mode with advertisements. Set `"AMP_MODE": "free"` in your Zed settings
 
 ## How it Works
 

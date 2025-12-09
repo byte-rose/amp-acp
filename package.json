@@ -11,7 +11,7 @@
   "scripts": {
     "start": "node src/index.js",
     "lint": "echo 'no lint'",
-    "test": "node -e 'console.log(\"OK\")'"
+    "test": "echo 'no tests'"
   },
   "dependencies": {
     "@agentclientprotocol/sdk": "0.4.8"
